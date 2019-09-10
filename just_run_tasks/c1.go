@@ -7,6 +7,7 @@ import (
 
 func doTask(wg *sync.WaitGroup, i int) {
   defer wg.Done()
+  //defer wg.Done()
   j := i * 2
   fmt.Println("task ", i , "done: ", j)
 }

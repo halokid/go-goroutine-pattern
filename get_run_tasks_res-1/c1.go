@@ -9,7 +9,7 @@ func doTask(wg *sync.WaitGroup, lk *sync.RWMutex, i int, taskRes *map[int]int) {
   defer wg.Done()
   j := i * 2
   lk.Lock()
-  (*taskRes)[i] = j
+  (*taskRes)[i] = j         // 共享内存的运算方式
   lk.Unlock()
   fmt.Println("task ", i , "done: ", j)
 }
