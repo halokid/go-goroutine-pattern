@@ -11,7 +11,7 @@ func Run(taskId, sleepTime, timeout int, ch chan string) {
 
   select {
   case re := <-chRun:
-    ch <-re
+    ch <-re       // 1 , 这里是把 re 结果写入到 ch
   case <-time.After(time.Duration(timeout) * time.Second):
     re := fmt.Sprintf("任务id %d, 超时...", taskId)
     ch <-re
@@ -27,7 +27,8 @@ func run(taskId, sleepTime int, ch chan string) {
 func main() {
   input := []int{3, 2, 1}
   timeOut := 2
-  chLimit := make(chan bool, 1)
+  //chLimit := make(chan bool, 1)
+  chLimit := make(chan bool, 2)
   chs := make([]chan string, len(input))
 
   limitFunc := func(chLimit chan bool, ch chan string, taskId, sleepTime, timeOut int) {
@@ -38,8 +39,9 @@ func main() {
   startTime := time.Now()
   fmt.Println("Multirun start ...")
   for i, sleepTime := range input {
-    //chs[i] = make(chan string, 1)
-    chs[i] = make(chan string)
+    // fixme: 如果这里不设一个缓冲channel，则 1 的位置会阻塞， 造成死锁
+    chs[i] = make(chan string, 1)
+    //chs[i] = make(chan string)
     // 如果下面的gor func不执行的话，则会阻塞在这里
     chLimit <-true
     go limitFunc(chLimit, chs[i], i, sleepTime, timeOut)
